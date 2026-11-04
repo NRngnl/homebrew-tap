@@ -1,0 +1,30 @@
+# Keeps Casks/wireproxy-gui.rb on the latest NRngnl/wireproxy-gui release. Runs every 6 hours and by hand.
+name: bump
+on:
+  schedule: [{cron: "23 */6 * * *"}]
+  workflow_dispatch: {inputs: {tag: {description: "release tag (default: latest)", required: false}}}
+permissions: {contents: write, pull-requests: write}
+jobs:
+  bump:
+    runs-on: ubuntu-24.04
+    env: {GH_TOKEN: "${{ github.token }}"}
+    steps:
+      - uses: actions/checkout@v7
+      - run: scripts/bump.sh ${{ inputs.tag }}
+      # main takes changes only through a pull request (no approval needed): push a branch,
+      # open a PR and merge it.
+      - name: Open and merge a pull request
+        run: |
+          git add Casks
+          git diff --cached --quiet && exit 0
+          version=$(sed -n 's/^  version "\(.*\)"/\1/p' Casks/wireproxy-gui.rb)
+          branch="bump/wireproxy-gui-$version"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git commit -m "wireproxy-gui $version"
+          git push --force origin "$branch"
+          gh pr view "$branch" --json state -q .state 2>/dev/null | grep -qx OPEN ||
+            gh pr create --base "$GITHUB_REF_NAME" --head "$branch" --title "wireproxy-gui $version" \
+              --body "Cask bump from \`scripts/bump.sh\` (sha256 from the release's .sha256 files)."
+          gh pr merge "$branch" --squash --delete-branch
