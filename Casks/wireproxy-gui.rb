@@ -1,9 +1,9 @@
 cask "wireproxy-gui" do
   arch arm: "aarch64", intel: "x86_64"
 
-  version "0.3.2"
-  sha256 arm:   "fcaaa2062664dfc1bfda6ad7b532407562a2e7a94baca8f8500ce1f7ab3b284d",
-         intel: "4b9c196063010e2fd8c273f54cc9f5222f34f5448ed53d98b15312b1b96dd157"
+  version "0.3.3"
+  sha256 arm:   "4646153925bbbc1007c53895f5765d1a7f134f841c795d10dfa17ad96c45da1d",
+         intel: "f5431a6052e706c78762833bfbe39eeb50fb1fc6633aa077df37b8b96f4421bb"
 
   url "https://github.com/NRngnl/wireproxy-gui/releases/download/v#{version}/wireproxy-gui_#{version}_darwin_#{arch}.app.zip"
   name "Wireproxy GUI"
