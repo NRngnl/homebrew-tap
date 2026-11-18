@@ -15,13 +15,13 @@ cask "wireproxy-gui" do
     strategy :github_latest
   end
 
-  depends_on macos: :monterey
+  depends_on macos: ">= :monterey"
 
   app "Wireproxy GUI.app"
 
   # The app is ad-hoc signed, not notarized: clear the download quarantine so it opens.
-  postflight_steps do
-    run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/Wireproxy GUI.app"], must_succeed: false
+  postflight do
+    system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{appdir}/Wireproxy GUI.app"]
   end
 
   zap trash: [
